@@ -1,6 +1,8 @@
+<%@ page import="com.xiaomi.pojo.Product" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
+
 <html>
 
 	<head>
@@ -11,7 +13,6 @@
 		<script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-3.3.1.js"></script>
 		<script type="text/javascript" src="${pageContext.request.contextPath}/js/bootstrap.js"></script>
 		<script type="text/javascript" src="${pageContext.request.contextPath }/js/ajaxfileupload.js"></script>
-		<script type="text/javascript" src="${pageContext.request.contextPath}/js/pageList.js"></script>
 	</head>
 
 	<body>
@@ -20,6 +21,9 @@
 				<p>商品管理>更新商品</p>
 			</div>
 			<script type="text/javascript">
+				/**
+				 * 图片上传与中转
+				 */
 				function fileChange(){//注意：此处不能使用jQuery中的change事件，因此仅触发一次，因此使用标签的：onchange属性
 
 					$.ajaxFileUpload({
@@ -71,7 +75,13 @@
 							success : function (resp) {
 								if (resp.code === 200){
 									alert("修改成功！");
-									window.location="${pageContext.request.contextPath}/admin/product.jsp?pageNo=${sessionScope.page.pageNo}";
+									window.location="${pageContext.request.contextPath}/admin/product.jsp?pageNo=${sessionScope.page.pageNo}"+
+									"&pName=${sessionScope.productInfo.pName}"+
+									"&typeId=${sessionScope.productInfo.typeId}"+
+									"&lprice=${sessionScope.productInfo.lprice}"+
+									"&hprice=${sessionScope.productInfo.hprice}";
+
+
 								}else {
 									alert("修改失败！");
 								}
@@ -80,13 +90,17 @@
 					})
 				})
 
-
-
 			</script>
 <script type="text/javascript">
-	function myclose(ispage) {
-		window.location="${pageContext.request.contextPath}/admin/product?flag=split&ispage="+ispage;
-		//window.close();
+	/**
+	 * 取消按钮
+	 **/
+	function myclose() {
+		window.location="${pageContext.request.contextPath}/admin/product.jsp?pageNo=${sessionScope.page.pageNo}"+
+				"&pName=${sessionScope.productInfo.pName}"+
+				"&typeId=${sessionScope.productInfo.typeId}"+
+				"&lprice=${sessionScope.productInfo.lprice}"+
+				"&hprice=${sessionScope.productInfo.hprice}";
 	}
 </script>
 			<div id="table">
@@ -173,7 +187,7 @@
 								<input type="button" id="addBtn" value="提交" class="btn btn-success">
 							</td>
 							<td>
-								<input type="reset" value="取消" class="btn btn-default" onclick="myclose(1)">
+								<input type="reset" value="取消" class="btn btn-default" onclick="myclose()">
 							</td>
 						</tr>
 					</table>

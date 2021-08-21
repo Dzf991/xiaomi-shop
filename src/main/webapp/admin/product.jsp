@@ -3,9 +3,7 @@
 <%@page import="java.util.*" %>
 <%@ page import="com.xiaomi.pojo.ProductType" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%
-    List<ProductType> productTypeList = (List<ProductType>) application.getAttribute("productType");
-%>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -23,6 +21,21 @@
 <script type="text/javascript">
 
     $().ready(function () {
+        if ("${param.get("pName")}" !==""){
+            $("#pname").val(${param.get("pName")});
+        }
+        if ("${param.get("typeId")}" !==""){
+            var typeId = "${param.get("typeId")}";
+            $("#typeid").val(typeId);
+            alert($("#typeid").val());
+        }
+        if ("${param.get("lprice")}" !==""){
+            $("#lprice").val(${param.get("lprice")});
+        }
+        if ("${param.get("hprice")}" !==""){
+            $("#hprice").val(${param.get("hprice")});
+        }
+
         if ("${param.get("pageNo")}" === ""){
             pageList(1);
         }else {
@@ -32,6 +45,9 @@
 
 
     })
+    /**
+     * 实现全选
+     * */
     function allClick() {
         //取得全选复选框的选中未选 中状态
         var ischeck=$("#all").prop("checked");
@@ -40,11 +56,13 @@
             this.checked=ischeck;
         });
     }
-
+    /**
+     * 实现反选
+     * */
     function ckClick() {
         //取得所有name=ck的被选中的复选框
         var length=$("input[name=ck]:checked").length;
-//取得所有name=ck的复选框
+        //取得所有name=ck的复选框
         var len=$("input[name=ck]").length;
         //比较
         if(len == length){
@@ -61,7 +79,6 @@
      * @param pageSzie 页面显示多少数据
      */
     function pageList(pageNo) {
-        
         $.ajax({
 
             url: "product/pageList",
@@ -114,15 +131,18 @@
                         }
                         //绑定动态修改按钮
                         $("#updateBtn"+p.pId).on('click',function () {
-                            location.href = "${pageContext.request.contextPath}/admin/product/goUpdate?pId="+p.pId+"&pageNo="+"${sessionScope.page.pageNo}";
+                            location.href = "${pageContext.request.contextPath}/admin/product/goUpdate?pId="+p.pId+"&pageNo="+"${sessionScope.page.pageNo}"+
+                                "&pName="+$("#pname").val().trim()+
+                                "&typeId="+$("#typeid").val().trim()+
+                                "&lprice="+$("#lprice").val().trim()+
+                                "&hprice="+$("#hprice").val().trim()
+                            ;
                         })
                         //绑定动态删除按钮
                         $("#delBtn"+p.pId).on('click',function () {
                             if (confirm("是否要删除该商品？")){
                                 delProduct(p.pId);
                                 pageList("${sessionScope.page.pageNo}",5)
-                                <%--location.href = "${pageContext.request.contextPath}/admin/product/delProduct?pId="+p.pId;--%>
-                                <%--pageList(${sessionScope.page.pageNo},5);--%>
                             }
                         })
                     })
@@ -167,7 +187,11 @@
 
 
     }
-    
+
+    /**
+     * 点击删除按钮删除商品方法
+     * @param pid 商品id
+     */
     function delProduct(pid) {
         $.ajax({
             url: "product/delProduct",
@@ -187,6 +211,14 @@
         })
     }
 
+    /**
+     * 按条件查找
+     */
+    function slectByConditions() {
+
+        pageList(1);
+    }
+
 </script>
 <body>
 <div id="brall">
@@ -194,25 +226,19 @@
         <p>商品管理>商品列表</p>
     </div>
     <div id="condition" style="text-align: center">
+
         <form id="myform">
             商品名称：<input name="pName" id="pname">&nbsp;&nbsp;&nbsp;
             商品类型：<select name="typeId" id="typeid">
             <option value="">请选择</option>
             <c:forEach items="${applicationScope.get('productType')}" var="pt">
-<%--            <%--%>
-//                for (ProductType productType: productTypeList) {
 
-<%--                    %>--%>
-<%--            <option value="<%=productType.getTypeId()%>"><%=productType.getTypeName()%></option>--%>
                 <option value="${pt.typeId}">${pt.typeName}</option>
-                <%--                    <%--%>
-                }
-<%--            %>--%>
-<%--&lt;%&ndash;--%>
+
             </c:forEach>
         </select>&nbsp;&nbsp;&nbsp;
             价格：<input name="lprice" id="lprice">-<input name="hprice" id="hprice">
-            <input type="button" value="查询" onclick="pageList(1,5)">
+            <input type="button" value="查询" onclick="slectByConditions()">
         </form>
     </div>
     <br>
@@ -256,7 +282,9 @@
         $("#myform").submit();
     }
 
-    //批量删除
+    /**
+     *     批量删除
+     */
     function deleteBatch() {
 
             //取得所有被选中删除商品的pid
@@ -268,18 +296,10 @@
             }else{
                 // 有选中的商品，则取出每个选 中商品的ID，拼提交的ID的数据
                 if(confirm("您确定删除"+products.length+"条商品吗？")){
-                //拼接ID
-                //     $.each(products,function (index,item) {
-                //         id=$(item).val(); //22 33
-                //         alert(id);
-                //         if(id!=null)
-                //             str += id+",";  //22,33,44
-                //     });
+                    //整合数组
                     for (var i = 0; i < products.length; i++) {
 
                         ids.push(products[i].value);
-
-
 
                     }
                     alert(ids);
@@ -301,9 +321,6 @@
                             }
                         }
                     })
-
-                    <%--window.location="${pageContext.request.contextPath}/admin/product/deleteChoice?id="+str;--%>
-
                 }
         }
     }
@@ -314,7 +331,6 @@
             window.location="${pageContext.request.contextPath}/prod/delete.action?pid="+pid;
         }
     }
-
 
 </script>
 

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -39,7 +40,16 @@ public class ProductController {
     @GetMapping(value = "/admin/product/pageList")
     @ResponseBody
     public Page<Product> pageList(Page<Product> page,Product product,HttpServletRequest request){
+        Product productInfo = (Product) request.getSession().getAttribute("productInfo");
+        if (productInfo != null) {
+            product.setpName(productInfo.getpName());
+            product.setTypeId(productInfo.getTypeId());
+            product.setLprice(productInfo.getLprice());
+            product.setHprice(productInfo.getHprice());
+        }
+
         Page<Product> pageList = productService.pageList(page,product);
+        request.getSession().removeAttribute("productInfo");
 
         request.getSession().setAttribute("page",pageList);
 
@@ -74,13 +84,19 @@ public class ProductController {
 
     }
     @GetMapping(value = "/admin/product/goUpdate")
-    public String getProductById(Integer pId,Integer pageNo,HttpServletRequest request){
+    public String getProductById(Model model,Integer pId,Integer pageNo,HttpServletRequest request,Product product){
+        Product productInfo = productService.getProductById(pId);
 
-       Product product = productService.getProductById(pId);
+        request.setAttribute("pageNo",pageNo);
 
-       request.setAttribute("product",product);
-       request.setAttribute("pageNo",pageNo);
-       return "/admin/update.jsp";
+        model.addAttribute("product",productInfo);
+
+
+
+        HttpSession session = request.getSession();
+        session.setAttribute("productInfo",product);
+
+        return "/admin/update.jsp";
 
     }
     @ResponseBody
