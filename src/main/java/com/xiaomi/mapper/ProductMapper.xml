@@ -188,4 +188,13 @@
     select type_id,type_name
     from product_type
   </select>
+
+
+  <delete id="deleteByPrimaryKeys" parameterType="int">
+    delete from product_info
+    where p_id in
+    <foreach collection="ids" open="("  separator="," close=")" item="id">
+      #{id}
+    </foreach>
+  </delete>
 </mapper>

@@ -93,4 +93,16 @@ public class ProductServiceImpl implements ProductService {
             return new CommonResult(404,null);
         }
     }
+
+    @Override
+    public CommonResult delProductByIds(Integer[] id) {
+
+        int result = productMapper.deleteByPrimaryKeys(id);
+
+        if (result > 0){
+            return new CommonResult(200,null);
+        }else{
+            return new CommonResult(404,null);
+        }
+    }
 }

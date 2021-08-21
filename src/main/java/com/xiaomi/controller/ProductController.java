@@ -8,6 +8,7 @@ import com.xiaomi.service.ProductService;
 import com.xiaomi.util.FileNameUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -94,6 +95,14 @@ public class ProductController {
     public CommonResult delProductById(Integer pId){
 
         return productService.delProductById(pId);
+
+    }
+    @ResponseBody
+    @PostMapping(value = "/admin/product/deleteChoice")
+    public CommonResult delProductByIds(Integer[] id){
+        return productService.delProductByIds(id);
+
+
 
     }
 }

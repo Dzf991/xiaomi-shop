@@ -260,25 +260,49 @@
     function deleteBatch() {
 
             //取得所有被选中删除商品的pid
-            var zhi=$("input[name=ck]:checked");
+            var products=$("input[name=ck]:checked");
             var str="";
-            var id="";
-            if(zhi.length==0){
+            var ids=[];
+            if(products.length===0){
                 alert("请选择将要删除的商品！");
             }else{
                 // 有选中的商品，则取出每个选 中商品的ID，拼提交的ID的数据
-                if(confirm("您确定删除"+zhi.length+"条商品吗？")){
+                if(confirm("您确定删除"+products.length+"条商品吗？")){
                 //拼接ID
-                    $.each(zhi,function (index,item) {
+                //     $.each(products,function (index,item) {
+                //         id=$(item).val(); //22 33
+                //         alert(id);
+                //         if(id!=null)
+                //             str += id+",";  //22,33,44
+                //     });
+                    for (var i = 0; i < products.length; i++) {
 
-                        id=$(item).val(); //22 33
-                        alert(id);
-                        if(id!=null)
-                            str += id+",";  //22,33,44
-                    });
-alert(str+"11111111");
+                        ids.push(products[i].value);
+
+
+
+                    }
+                    alert(ids);
                     //发送请求到服务器端
-                   // window.location="${pageContext.request.contextPath}/prod/deletebatch.action?str="+str;
+                    $.ajax({
+                        url: "product/deleteChoice",
+                        type:"post",
+                        data : {
+                            id:ids
+                        },
+                        traditional:true,
+                        dataType:"json",
+                        success:function (resp) {
+                            if (resp.code === 200){
+                                alert("删除成功！");
+                                window.location="${pageContext.request.contextPath}/admin/product.jsp?pageNo=1"
+                            }else {
+                                alert("删除失败");
+                            }
+                        }
+                    })
+
+                    <%--window.location="${pageContext.request.contextPath}/admin/product/deleteChoice?id="+str;--%>
 
                 }
         }

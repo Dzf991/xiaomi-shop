@@ -28,4 +28,6 @@ public interface ProductMapper {
                            @Param(value = "product") Product product);
 
     List<ProductType> getProductType();
+
+    int deleteByPrimaryKeys(@Param(value = "ids") Integer[] ids);
 }

@@ -21,4 +21,6 @@ public interface ProductService {
     CommonResult updateProductById(Product product);
 
     CommonResult delProductById(Integer pId);
+
+    CommonResult delProductByIds(Integer[] id);
 }
